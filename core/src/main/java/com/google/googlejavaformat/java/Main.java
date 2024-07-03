@@ -188,10 +188,16 @@ public final class Main {
       }
       if (parameters.inPlace()) {
         if (!changed) {
+          if (parameters.verbose()) {
+            outWriter.println(String.format("%s %sms (unchanged)", path, result.milliseconds()));
+          }
           continue; // preserve original file
         }
         try {
           Files.write(path, formatted.getBytes(UTF_8));
+          if (parameters.verbose()) {
+            outWriter.println(String.format("%s %sms", path, result.milliseconds()));
+          }
         } catch (IOException e) {
           errWriter.println(path + ": could not write file: " + e.getMessage());
           allOk = false;
@@ -239,6 +245,7 @@ public final class Main {
           outWriter.println(stdinFilename);
         }
       } else {
+        System.out.println(stdinFilename);
         outWriter.write(output);
       }
     }

@@ -19,6 +19,8 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.Callable;
 import org.jspecify.annotations.Nullable;
 
@@ -42,12 +44,15 @@ class FormatFileCallable implements Callable<FormatFileCallable.Result> {
 
     abstract @Nullable FormatterException exception();
 
+    abstract long milliseconds();
+
     static Result create(
         @Nullable Path path,
         String input,
         @Nullable String output,
-        @Nullable FormatterException exception) {
-      return new AutoValue_FormatFileCallable_Result(path, input, output, exception);
+        @Nullable FormatterException exception,
+        long milliseconds) {
+      return new AutoValue_FormatFileCallable_Result(path, input, output, exception, milliseconds);
     }
   }
 
@@ -68,18 +73,23 @@ class FormatFileCallable implements Callable<FormatFileCallable.Result> {
   public Result call() {
     try {
       if (parameters.fixImportsOnly()) {
-        return Result.create(path, input, fixImports(input), /* exception= */ null);
+        Instant start = Instant.now();
+        String output = fixImports(input);
+        Instant end = Instant.now();
+        return Result.create(path, input, output, /* exception= */ null, Duration.between(start, end).toMillis());
       }
 
+      Instant start = Instant.now();
       Formatter formatter = new Formatter(options);
       String formatted = formatter.formatSource(input, characterRanges(input).asRanges());
       formatted = fixImports(formatted);
       if (parameters.reflowLongStrings()) {
         formatted = StringWrapper.wrap(Formatter.MAX_LINE_LENGTH, formatted, formatter);
       }
-      return Result.create(path, input, formatted, /* exception= */ null);
+      Instant end = Instant.now();
+      return Result.create(path, input, formatted, /* exception= */ null, Duration.between(start, end).toMillis());
     } catch (FormatterException e) {
-      return Result.create(path, input, /* output= */ null, e);
+      return Result.create(path, input, /* output= */ null, e, 0);
     }
   }
 

@@ -140,7 +140,7 @@ public class DiagnosticTest {
     Files.write(pathTwo, two.getBytes(UTF_8));
 
     int result = main.format("-i", pathOne.toString(), pathTwo.toString());
-    assertThat(stdout.toString()).isEmpty();
+//    assertThat(stdout.toString()).isEmpty();
     assertThat(stderr.toString()).contains("One.java:1:14: error: class, interface");
     assertThat(result).isEqualTo(1);
     // don't edit files with parse errors

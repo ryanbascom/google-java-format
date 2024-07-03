@@ -86,6 +86,11 @@ final class CommandLineOptionsParser {
         case "-a":
           optionsBuilder.aosp(true);
           break;
+        case "--verbose":
+        case "-verbose":
+        case "-vrb":
+          optionsBuilder.verbose(true);
+          break;
         case "--version":
         case "-version":
         case "-v":

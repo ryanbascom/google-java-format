@@ -33,6 +33,7 @@ final class CommandLineOptions {
   private final ImmutableRangeSet<Integer> lines;
   private final ImmutableList<Integer> offsets;
   private final ImmutableList<Integer> lengths;
+  private final boolean verbose;
   private final boolean aosp;
   private final boolean version;
   private final boolean help;
@@ -52,6 +53,7 @@ final class CommandLineOptions {
       ImmutableRangeSet<Integer> lines,
       ImmutableList<Integer> offsets,
       ImmutableList<Integer> lengths,
+      boolean verbose,
       boolean aosp,
       boolean version,
       boolean help,
@@ -69,6 +71,7 @@ final class CommandLineOptions {
     this.lines = lines;
     this.offsets = offsets;
     this.lengths = lengths;
+    this.verbose = verbose;
     this.aosp = aosp;
     this.version = version;
     this.help = help;
@@ -106,6 +109,10 @@ final class CommandLineOptions {
   /** Partial formatting region lengths, paired with {@code offsets}. */
   ImmutableList<Integer> lengths() {
     return lengths;
+  }
+
+  boolean verbose() {
+    return verbose;
   }
 
   /** Use AOSP style instead of Google Style (4-space indentation). */
@@ -184,6 +191,7 @@ final class CommandLineOptions {
     private final ImmutableList.Builder<Integer> offsets = ImmutableList.builder();
     private final ImmutableList.Builder<Integer> lengths = ImmutableList.builder();
     private boolean inPlace = false;
+    private boolean verbose = false;
     private boolean aosp = false;
     private boolean version = false;
     private boolean help = false;
@@ -222,6 +230,11 @@ final class CommandLineOptions {
 
     Builder aosp(boolean aosp) {
       this.aosp = aosp;
+      return this;
+    }
+
+    Builder verbose(boolean verbose) {
+      this.verbose = verbose;
       return this;
     }
 
@@ -287,6 +300,7 @@ final class CommandLineOptions {
           ImmutableRangeSet.copyOf(lines),
           offsets.build(),
           lengths.build(),
+          verbose,
           aosp,
           version,
           help,
